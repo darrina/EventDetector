@@ -1,4 +1,3 @@
-using EventDetector.Interfaces;
 using EventDetector.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -6,35 +5,22 @@ using System.Linq;
 
 namespace EventDetector.Services
 {
-    public class HashEventDetectorService : IEventDetectorService
+    public class HashEventDetectorService : BaseEventDetectorService
     {
         private readonly HashSet<int> publishedEvents = new();
-        private readonly ILogger logger;
 
         public HashEventDetectorService(ILogger<HashEventDetectorService> logger)
-        {
-            this.logger = logger;
-        }
+            : base (logger) {}
 
-        public bool IsOrdered(IEnumerable<Event> events)
-        {
-            if ((events?.Count() ?? 0) == 0)
+        protected override bool ValidateOrder(IEnumerable<Event> events) => events
+            .All(@event => @event switch
             {
-                logger.LogError("Event is null or empty");
-                return false;
-            }
+                Event e when e.Type == EventTypes.Publish
+                    => publishedEvents.Add(e.Group),
+                Event e when e.Type == EventTypes.Deliver
+                    => publishedEvents.Contains(e.Group),
 
-            return events.All(@event =>
-                @event switch
-                {
-                    Event e when e.Type == EventTypes.Publish
-                        => publishedEvents.Add(e.Group),
-                    Event e when e.Type == EventTypes.Deliver
-                        => publishedEvents.Contains(e.Group),
-
-                    _ => false
-                }
-            );
-        }
+                _ => false
+            });
     }
 }
