@@ -1,0 +1,99 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "build",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "unit",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "test",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary",
+                "--filter",
+                "Category=Unit",
+                "/p:CollectCoverage=true",
+                "/p:CoverletOutputFormat=\"opencover\"",
+                "/p:CoverletOutput=\"../../coverage/\"",
+                // "/p:Threshold=90",
+                "/p:ThresholdType=line",
+                "/p:ThresholdStat=total",
+                "/p:Include=\"[EventDetector]*\""
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "coverage",
+            "command": "reportgenerator",
+            "type": "shell",
+            "args": [
+                "-reports:${workspaceFolder}/coverage/coverage.opencover.xml",
+                "-reporttypes:HtmlInline",
+                "-targetdir:${workspaceFolder}/coverage/report",
+                "-historydir:${workspaceFolder}/coverage/history"
+            ],
+            "dependsOn": "unit",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "clean",
+            "command": "rm",
+            "type": "shell",
+            "args": [
+                "-r",
+                "*/*/bin",
+                "*/*/obj"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "tool:reportgenerator",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "tool",
+                "install",
+                "-g",
+                "dotnet-reportgenerator-globaltool"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
