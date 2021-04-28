@@ -15,27 +15,32 @@ namespace EventDetector.Models
 
         public Event(string eventData)
         {
-            if (eventData?.Length != 2)
+            if (string.IsNullOrEmpty(eventData))
             {
-                throw new ArgumentException($"eventData must contain 2 characters: {eventData}", nameof(eventData));
+                throw new ArgumentException($"must not be null or empty", nameof(eventData));
             }
 
-            Type = (eventData?[0]) switch
+            if (eventData.Length < 2)
+            {
+                throw new ArgumentException($"must be at least 2 characters: {eventData}", nameof(eventData));
+            }
+
+            Type = eventData[0] switch
             {
                 char c when c == 'P' => EventTypes.Publish,
                 char c when c == 'D' => EventTypes.Deliver,
 
                 _ => throw new ArgumentException(
-                    $"{nameof(eventData)} first character must be P or D, found: {eventData}",
+                    $"prefix character '{eventData[0]}' must be one of: 'P','D'",
                     nameof(eventData))
             };
 
-            Group = (eventData?[1]) switch
+            Group = eventData[1..] switch
             {
-                char c when int.TryParse($"{c}", out int group) => group,
+                string s when int.TryParse(s, out int group) => group,
 
                 _ => throw new ArgumentException(
-                    $"{nameof(eventData)} second character must be a valid integer, found: {eventData}",
+                    $"suffix must be an integer: {eventData[1..]}",
                     nameof(eventData))
             };
         }

@@ -33,6 +33,7 @@ namespace EventDetector.Tests
                     builder.AddSerilog(logger: logger, dispose: true);
                 })
                 .AddSingleton<IEventDetectorService, HashEventDetectorService>()
+                .AddSingleton<IEventDetectorService, LinqEventDetectorService>()
                 .BuildServiceProvider();
         }
     }

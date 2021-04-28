@@ -59,10 +59,11 @@
                 "-historydir:${workspaceFolder}/coverage/history"
             ],
             "dependsOn": "unit",
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            }
+            "group": "test",
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": []
         },
         {
             "label": "clean",
